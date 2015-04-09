@@ -59,9 +59,63 @@ static void CheckError(OSStatus error, const char *operation)
                                    &settings.inputFile),
                "ExtAudioFileOpenURL failed");
     
-    settings.outputFormat.mSampleRate = self.outputSampleRate?self.outputSampleRate:44100;//Default 44100
-    settings.outputFormat.mBitsPerChannel = self.outputSampleRate?self.outputSampleRate/8:2;//Default 2
-    settings.outputFormat.mChannelsPerFrame = self.outputNumberChannels?self.outputNumberChannels:2;//Default 2
+    //Get input file's format
+    
+    
+    //Set output format
+    if (self.outputSampleRate==0) {
+        self.outputSampleRate = 44100;
+    }
+    
+    if (self.outputNumberChannels==0) {
+        self.outputNumberChannels = 2;
+    }
+    
+    if (self.outputBitDepth==0) {
+        self.outputBitDepth = 16;
+    }
+    
+    if (self.outputFormatID==0) {
+        self.outputFormatID = kAudioFormatLinearPCM;
+    }
+    
+    if (self.outputFileType==0) {
+        self.outputFileType = kAudioFileWAVEType;
+    }
+    
+    settings.outputFormat.mSampleRate       = self.outputSampleRate;
+    settings.outputFormat.mBitsPerChannel   = self.outputSampleRate;
+    settings.outputFormat.mChannelsPerFrame = self.outputNumberChannels;
+    settings.outputFormat.mFormatID         = self.outputFormatID;
+    
+    //Create output file
+    NSURL* outputURL = [NSURL fileURLWithPath:self.outputFile];
+    CheckError(AudioFileCreateWithURL((__bridge CFURLRef)outputURL,
+                                      self.outputFileType,
+                                      &settings.outputFormat,
+                                      kAudioFileFlags_EraseFile,
+                                      &settings.outputFile),
+               "Create output file failed");
+    
+    //Set input file's client data format
+    //Must be PCM, thus as we say, "when you convert data, I want to receive PCM format"
+    AudioStreamBasicDescription clientDataFormat;
+    clientDataFormat.mSampleRate = 44100;
+    clientDataFormat.mFormatID = kAudioFormatLinearPCM;
+    clientDataFormat.mFormatFlags = kAudioFormatFlagIsBigEndian | kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
+    clientDataFormat.mFramesPerPacket = 1;
+    clientDataFormat.mChannelsPerFrame = 2;
+    clientDataFormat.mBytesPerFrame = 2;
+    clientDataFormat.mBytesPerPacket = 2;
+    clientDataFormat.mBitsPerChannel = 16;
+    
+    CheckError(ExtAudioFileSetProperty(settings.inputFile,
+                                       kExtAudioFileProperty_ClientDataFormat,
+                                       sizeof(clientDataFormat),
+                                       &clientDataFormat),
+               "Setting client data format of input file failed");
+    
+    
     
     return YES;
 }

@@ -18,14 +18,16 @@ enum BitDepth{
 
 @interface ExtAudioConverter : NSObject
 
-@property(nonatomic,retain)NSString* sourceFile;
-@property(nonatomic,retain)NSString* outputFile;
+//Must set
+@property(nonatomic,retain)NSString* sourceFile;//Absolute path
+@property(nonatomic,retain)NSString* outputFile;//Absolute path
 
-//Output format
+//optional
 @property(nonatomic,assign)int outputSampleRate;//Default 44100.0
 @property(nonatomic,assign)int outputNumberChannels;//Default 2
 @property(nonatomic,assign)enum BitDepth outputBitDepth;//Default BitDepth_16
-@property(nonatomic,assign)AudioFormatID outputFormatID;
+@property(nonatomic,assign)AudioFormatID outputFormatID;//Default Linear PCM
+@property(nonatomic,assign)AudioFileTypeID outputFileType;//Default kAudioFileWAVEType
 
 -(BOOL)convert;
 

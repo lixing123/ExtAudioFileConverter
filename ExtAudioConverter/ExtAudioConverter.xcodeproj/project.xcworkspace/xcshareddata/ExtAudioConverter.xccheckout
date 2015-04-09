@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>6B6A641C-84B2-4F4C-AF9D-819CEB0DD1E7</string>
+	<key>IDESourceControlProjectName</key>
+	<string>ExtAudioConverter</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>7D4FE7030989B0042BC950B2FF664B4F5A4A7948</key>
+		<string>https://github.com/lixing123/ExtAudioConverter.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>ExtAudioConverter/ExtAudioConverter.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>7D4FE7030989B0042BC950B2FF664B4F5A4A7948</key>
+		<string>../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/lixing123/ExtAudioConverter.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>7D4FE7030989B0042BC950B2FF664B4F5A4A7948</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>7D4FE7030989B0042BC950B2FF664B4F5A4A7948</string>
+			<key>IDESourceControlWCCName</key>
+			<string>ExtAudioConverter</string>
+		</dict>
+	</array>
+</dict>
+</plist>
