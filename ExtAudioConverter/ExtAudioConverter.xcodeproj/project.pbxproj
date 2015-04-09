@@ -1,0 +1,249 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		8EE9B5531AD67A5B0009BD0A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8EE9B5521AD67A5B0009BD0A /* main.m */; };
+		8EE9B55B1AD67A730009BD0A /* ExtAudioConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 8EE9B55A1AD67A730009BD0A /* ExtAudioConverter.m */; };
+		8EE9B55D1AD67E460009BD0A /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8EE9B55C1AD67E460009BD0A /* AudioToolbox.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		8EE9B54D1AD67A5B0009BD0A /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		8EE9B54F1AD67A5B0009BD0A /* ExtAudioConverter */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ExtAudioConverter; sourceTree = BUILT_PRODUCTS_DIR; };
+		8EE9B5521AD67A5B0009BD0A /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		8EE9B5591AD67A730009BD0A /* ExtAudioConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExtAudioConverter.h; sourceTree = "<group>"; };
+		8EE9B55A1AD67A730009BD0A /* ExtAudioConverter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExtAudioConverter.m; sourceTree = "<group>"; };
+		8EE9B55C1AD67E460009BD0A /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8EE9B54C1AD67A5B0009BD0A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8EE9B55D1AD67E460009BD0A /* AudioToolbox.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		8EE9B5461AD67A5B0009BD0A = {
+			isa = PBXGroup;
+			children = (
+				8EE9B55C1AD67E460009BD0A /* AudioToolbox.framework */,
+				8EE9B5511AD67A5B0009BD0A /* ExtAudioConverter */,
+				8EE9B5501AD67A5B0009BD0A /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		8EE9B5501AD67A5B0009BD0A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8EE9B54F1AD67A5B0009BD0A /* ExtAudioConverter */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8EE9B5511AD67A5B0009BD0A /* ExtAudioConverter */ = {
+			isa = PBXGroup;
+			children = (
+				8EE9B5521AD67A5B0009BD0A /* main.m */,
+				8EE9B5591AD67A730009BD0A /* ExtAudioConverter.h */,
+				8EE9B55A1AD67A730009BD0A /* ExtAudioConverter.m */,
+			);
+			path = ExtAudioConverter;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8EE9B54E1AD67A5B0009BD0A /* ExtAudioConverter */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8EE9B5561AD67A5B0009BD0A /* Build configuration list for PBXNativeTarget "ExtAudioConverter" */;
+			buildPhases = (
+				8EE9B54B1AD67A5B0009BD0A /* Sources */,
+				8EE9B54C1AD67A5B0009BD0A /* Frameworks */,
+				8EE9B54D1AD67A5B0009BD0A /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ExtAudioConverter;
+			productName = ExtAudioConverter;
+			productReference = 8EE9B54F1AD67A5B0009BD0A /* ExtAudioConverter */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		8EE9B5471AD67A5B0009BD0A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0620;
+				ORGANIZATIONNAME = lixing123.com;
+				TargetAttributes = {
+					8EE9B54E1AD67A5B0009BD0A = {
+						CreatedOnToolsVersion = 6.2;
+					};
+				};
+			};
+			buildConfigurationList = 8EE9B54A1AD67A5B0009BD0A /* Build configuration list for PBXProject "ExtAudioConverter" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 8EE9B5461AD67A5B0009BD0A;
+			productRefGroup = 8EE9B5501AD67A5B0009BD0A /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8EE9B54E1AD67A5B0009BD0A /* ExtAudioConverter */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8EE9B54B1AD67A5B0009BD0A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8EE9B5531AD67A5B0009BD0A /* main.m in Sources */,
+				8EE9B55B1AD67A730009BD0A /* ExtAudioConverter.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		8EE9B5541AD67A5B0009BD0A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		8EE9B5551AD67A5B0009BD0A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		8EE9B5571AD67A5B0009BD0A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		8EE9B5581AD67A5B0009BD0A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		8EE9B54A1AD67A5B0009BD0A /* Build configuration list for PBXProject "ExtAudioConverter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8EE9B5541AD67A5B0009BD0A /* Debug */,
+				8EE9B5551AD67A5B0009BD0A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8EE9B5561AD67A5B0009BD0A /* Build configuration list for PBXNativeTarget "ExtAudioConverter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8EE9B5571AD67A5B0009BD0A /* Debug */,
+				8EE9B5581AD67A5B0009BD0A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 8EE9B5471AD67A5B0009BD0A /* Project object */;
+}
