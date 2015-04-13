@@ -19,7 +19,7 @@ enum BitDepth{
 @interface ExtAudioConverter : NSObject
 
 //Must set
-@property(nonatomic,retain)NSString* sourceFile;//Absolute path
+@property(nonatomic,retain)NSString* inputFile;//Absolute path
 @property(nonatomic,retain)NSString* outputFile;//Absolute path
 
 //optional

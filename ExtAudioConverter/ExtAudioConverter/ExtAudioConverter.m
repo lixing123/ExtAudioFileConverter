@@ -92,7 +92,7 @@ void startConvert(ExtAudioConverterSettings* settings){
 
 @implementation ExtAudioConverter
 
-@synthesize sourceFile;
+@synthesize inputFile;
 @synthesize outputFile;
 @synthesize outputSampleRate;
 @synthesize outputNumberChannels;
@@ -102,7 +102,7 @@ void startConvert(ExtAudioConverterSettings* settings){
     ExtAudioConverterSettings settings = {0};
     
     //Check if source file or output file is null
-    if (self.sourceFile==NULL) {
+    if (self.inputFile==NULL) {
         NSLog(@"Source file is not set");
         return NO;
     }
@@ -113,7 +113,7 @@ void startConvert(ExtAudioConverterSettings* settings){
     }
     
     //Create ExtAudioFileRef
-    NSURL* sourceURL = [NSURL fileURLWithPath:self.sourceFile];
+    NSURL* sourceURL = [NSURL fileURLWithPath:self.inputFile];
     CheckError(ExtAudioFileOpenURL((__bridge CFURLRef)sourceURL,
                                    &settings.inputFile),
                "ExtAudioFileOpenURL failed");
@@ -163,8 +163,8 @@ void startConvert(ExtAudioConverterSettings* settings){
     settings.inputPCMFormat.mFormatFlags = kAudioFormatFlagIsBigEndian | kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
     settings.inputPCMFormat.mFramesPerPacket = 1;
     settings.inputPCMFormat.mChannelsPerFrame = 2;
-    settings.inputPCMFormat.mBytesPerFrame = 2;
-    settings.inputPCMFormat.mBytesPerPacket = 2;
+    settings.inputPCMFormat.mBytesPerFrame = 4;
+    settings.inputPCMFormat.mBytesPerPacket = 4;
     settings.inputPCMFormat.mBitsPerChannel = 16;
     
     CheckError(ExtAudioFileSetProperty(settings.inputFile,

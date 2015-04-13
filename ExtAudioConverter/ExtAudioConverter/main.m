@@ -7,11 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "ExtAudioConverter.h"
 
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
-        // insert code here...
-        NSLog(@"Hello, World!");
+        ExtAudioConverter* converter = [[ExtAudioConverter alloc] init];
+        converter.inputFile = @"/Users/lixing/Desktop/playAndRecord.caf";
+        converter.outputFile = @"/Users/lixing/Desktop/output.wav";
+        [converter convert];
     }
     return 0;
 }
