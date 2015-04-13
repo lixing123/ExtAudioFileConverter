@@ -9,9 +9,14 @@
 #import "ExtAudioConverter.h"
 
 typedef struct ExtAudioConverterSettings{
+    AudioStreamBasicDescription inputPCMFormat;
     AudioStreamBasicDescription outputFormat;
+    
     ExtAudioFileRef             inputFile;
     AudioFileID                 outputFile;
+    
+    AudioStreamPacketDescription* inputPacketDescriptions;
+    SInt64 outputFileStartingPacketCount;
 }ExtAudioConverterSettings;
 
 static void CheckError(OSStatus error, const char *operation)
@@ -29,6 +34,60 @@ static void CheckError(OSStatus error, const char *operation)
         sprintf(errorString, "%d", (int)error);
     fprintf(stderr, "Error: %s (%s)\n", operation, errorString);
     exit(1);
+}
+
+void startConvert(ExtAudioConverterSettings* settings){
+    //Determine the proper buffer size and calculate number of packets per buffer
+    //for CBR and VBR format
+    UInt32 sizePerBuffer = 32*1024;//32KB is a good start
+    UInt32 sizePerPacket = settings->outputFormat.mBytesPerPacket;
+    UInt32 packetsPerBuffer;
+    
+    //For a format that uses variable packet size
+    UInt32 size = sizeof(sizePerPacket);
+    if (sizePerPacket==0) {
+        CheckError(ExtAudioFileGetProperty(settings->inputFile,
+                                           kExtAudioFileProperty_FileMaxPacketSize,
+                                           &size,
+                                           &sizePerPacket),
+                   "ExtAudioFileGetProperty kExtAudioFileProperty_FileMaxPacketSize failed");
+        if (sizePerBuffer<sizePerPacket) {
+            sizePerBuffer = sizePerPacket;
+        }
+        
+        packetsPerBuffer = sizePerBuffer/sizePerPacket;
+        settings->inputPacketDescriptions = (AudioStreamPacketDescription*)malloc(packetsPerBuffer*sizeof(AudioStreamPacketDescription));
+    }else{//For a format that uses Constant packet size
+        packetsPerBuffer = sizePerBuffer/sizePerPacket;
+    }
+    
+    AudioConverterRef audioConverter;
+    AudioConverterNew(&settings->inputPCMFormat,
+                      &settings->outputFormat,
+                      &audioConverter);
+    
+    while (1) {
+        AudioBufferList outputBufferList;
+        outputBufferList.mNumberBuffers = 1;
+        outputBufferList.mBuffers[0].mNumberChannels = settings->outputFormat.mChannelsPerFrame;
+        outputBufferList.mBuffers[0].mDataByteSize = sizePerBuffer;
+        
+        CheckError(ExtAudioFileRead(settings->inputFile,
+                                    &sizePerBuffer,
+                                    &outputBufferList),
+                   "AudioConverterFillComplexBuffer failed");
+        
+        //Write the converted data to the output file
+        CheckError(AudioFileWritePackets(settings->outputFile,
+                                         NO,
+                                         sizePerBuffer,
+                                         settings->inputPacketDescriptions?settings->inputPacketDescriptions:nil,
+                                         settings->outputFileStartingPacketCount,
+                                         &packetsPerBuffer,
+                                         outputBufferList.mBuffers[0].mData),
+                   "AudioFileWritePackets failed");
+        settings->outputFileStartingPacketCount += packetsPerBuffer;
+    }
 }
 
 @implementation ExtAudioConverter
@@ -99,23 +158,23 @@ static void CheckError(OSStatus error, const char *operation)
     
     //Set input file's client data format
     //Must be PCM, thus as we say, "when you convert data, I want to receive PCM format"
-    AudioStreamBasicDescription clientDataFormat;
-    clientDataFormat.mSampleRate = 44100;
-    clientDataFormat.mFormatID = kAudioFormatLinearPCM;
-    clientDataFormat.mFormatFlags = kAudioFormatFlagIsBigEndian | kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
-    clientDataFormat.mFramesPerPacket = 1;
-    clientDataFormat.mChannelsPerFrame = 2;
-    clientDataFormat.mBytesPerFrame = 2;
-    clientDataFormat.mBytesPerPacket = 2;
-    clientDataFormat.mBitsPerChannel = 16;
+    settings.inputPCMFormat.mSampleRate = 44100;
+    settings.inputPCMFormat.mFormatID = kAudioFormatLinearPCM;
+    settings.inputPCMFormat.mFormatFlags = kAudioFormatFlagIsBigEndian | kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
+    settings.inputPCMFormat.mFramesPerPacket = 1;
+    settings.inputPCMFormat.mChannelsPerFrame = 2;
+    settings.inputPCMFormat.mBytesPerFrame = 2;
+    settings.inputPCMFormat.mBytesPerPacket = 2;
+    settings.inputPCMFormat.mBitsPerChannel = 16;
     
     CheckError(ExtAudioFileSetProperty(settings.inputFile,
                                        kExtAudioFileProperty_ClientDataFormat,
-                                       sizeof(clientDataFormat),
-                                       &clientDataFormat),
+                                       sizeof(settings.inputPCMFormat),
+                                       &settings.inputPCMFormat),
                "Setting client data format of input file failed");
     
-    
+    printf("Starting convert...");
+    startConvert(&settings);
     
     return YES;
 }
