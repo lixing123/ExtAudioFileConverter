@@ -18,16 +18,24 @@ converter.outputFile = @"/Users/lixing/Desktop/output.wav";
 The following parameters are optional:
 
 Set the sample rate:
+
 converter.outputSampleRate = 44100;
     
-Set channel count
+    
+Set channel count:
+
 converter.outputNumberChannels = 2;
     
-Set bit depth
+Set bit depth:
+
 converter.outputBitDepth = BitDepth_16;
     
-Set data format
+    
+Set data format:
+
 converter.outputFormatID = kAudioFormatLinearPCM;
     
-Set file format
+    
+Set file format:
+
 converter.outputFileType = kAudioFileWAVEType;
