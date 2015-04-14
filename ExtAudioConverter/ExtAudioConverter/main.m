@@ -12,7 +12,7 @@
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
         ExtAudioConverter* converter = [[ExtAudioConverter alloc] init];
-        converter.inputFile = @"/Users/lixing/Desktop/playAndRecord.caf";
+        converter.inputFile =  @"/Users/lixing/Desktop/playAndRecord.caf";
         converter.outputFile = @"/Users/lixing/Desktop/output.wav";
         [converter convert];
     }
