@@ -70,7 +70,7 @@ void startConvert(ExtAudioConverterSettings* settings){
                       &audioConverter);
     
     settings->outputFileStartingPacketCount = 0;
-    while (YES) {
+    while (1) {
         AudioBufferList outputBufferList;
         outputBufferList.mNumberBuffers = 1;
         outputBufferList.mBuffers[0].mNumberChannels = settings->outputFormat.mChannelsPerFrame;
@@ -95,13 +95,13 @@ void startConvert(ExtAudioConverterSettings* settings){
                                          framesCount,
                                          //settings->inputPacketDescriptions?settings->inputPacketDescriptions:nil,
                                          NULL,
-                                         //settings->outputFileStartingPacketCount/settings->outputFormat.mBytesPerPacket,//为什么要除以bytesPerPacket?
-                                         settings->outputFileStartingPacketCount,
+                                         settings->outputFileStartingPacketCount/settings->outputFormat.mBytesPerPacket,//为什么要除以bytesPerPacket?
+                                         //settings->outputFileStartingPacketCount,
                                          &framesCount,
                                          outputBufferList.mBuffers[0].mData),
                    "AudioFileWritePackets failed");
         //NSLog(@"packet count:%lld",settings->outputFileStartingPacketCount);
-        settings->outputFileStartingPacketCount += framesCount;
+        settings->outputFileStartingPacketCount += framesCount*settings->outputFormat.mBytesPerPacket;
     }
 }
 
@@ -170,6 +170,7 @@ void startConvert(ExtAudioConverterSettings* settings){
     settings.outputFormat.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
     
     //Create output file
+    //if output file path is invalid, this may return an error with 'wht?'
     NSURL* outputURL = [NSURL fileURLWithPath:self.outputFile];
     CheckError(AudioFileCreateWithURL((__bridge CFURLRef)outputURL,
                                       self.outputFileType,
@@ -182,7 +183,7 @@ void startConvert(ExtAudioConverterSettings* settings){
     //Must be PCM, thus as we say, "when you convert data, I want to receive PCM format"
     settings.inputPCMFormat.mSampleRate = 44100;
     settings.inputPCMFormat.mFormatID = kAudioFormatLinearPCM;
-    settings.inputPCMFormat.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
+    settings.inputPCMFormat.mFormatFlags = kAudioFormatFlagIsBigEndian | kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
     settings.inputPCMFormat.mFramesPerPacket = 1;
     settings.inputPCMFormat.mChannelsPerFrame = 2;
     settings.inputPCMFormat.mBytesPerFrame = 4;

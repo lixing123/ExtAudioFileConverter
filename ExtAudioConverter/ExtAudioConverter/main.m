@@ -14,6 +14,9 @@ int main(int argc, const char * argv[]) {
         ExtAudioConverter* converter = [[ExtAudioConverter alloc] init];
         converter.inputFile =  @"/Users/lixing/Desktop/playAndRecord.caf";
         converter.outputFile = @"/Users/lixing/Desktop/output.wav";
+        
+        //TODO:if the output sample rate is not 44100, voice duration will be wrong
+        converter.outputSampleRate = 8000;
         [converter convert];
     }
     return 0;
