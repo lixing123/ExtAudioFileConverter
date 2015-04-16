@@ -1,50 +1,54 @@
-# ExtAudioConverter
-An iOS project to convert audio from any format to any format.
-ExtAuioConverter is an implementation of the afconvert command on OS X, 
+## An iOS project to convert audio from any format to any format.</br>
+ExtAuioConverter is an implementation of the afconvert command on OS X, </br>
 so this readme file uses some hints of afconvert help documentation. For example, LEI16 means little-endian signed int with 16 bit depth.
 
-How to use:
+###How to use:
 
 1\ Link Binary with Library "AudioToolbox.framework";
 
 2\Add "ExtAudioConverter.h" and "ExtAudioConverter.m" to your project;
 
 3\Test:
-
+```objective-c
 ExtAudioConverter* converter = [[ExtAudioConverter alloc] init];
 converter.inputFile =  @"/Users/lixing/Desktop/input.caf";
 converter.outputFile = @"/Users/lixing/Desktop/output.wav";
 [converter convert];
-
+```
 4\
-The following parameters are optional:
+The following parameters are optional:</br>
 
-Set the sample rate:
+Set the sample rate:</br>
+```objective-c
 converter.outputSampleRate = 44100;
-
-Set channel count:
+```
+Set channel count:</br>
+```objective-c
 converter.outputNumberChannels = 2;
+```
 
-Set bit depth:
+Set bit depth:</br>
+```objective-c
 converter.outputBitDepth = BitDepth_16;
-
-Set data format:
+```
+Set data format:</br>
+```objective-c
 converter.outputFormatID = kAudioFormatLinearPCM;
-
-Set file format:
+```
+Set file format:</br>
+```objective-c
 converter.outputFileType = kAudioFileWAVEType;
-
+```
 
 Some parameter combinations is impossible, like mp3 file format together with wav data format, so please take care to check if the combinations are correct.
 
 
 
-Available Input file type/format type:
-mp3/mp3(tested);
-caf/wav(tested);
+###Available Input file type/format type:</br>
+mp3/mp3(tested);</br>
+caf/wav(tested);</br>
 
-
-Available Output file type/format type:
-wav/LEI16(tested);
-wav/LEI32(tested);
+###Available Output file type/format type:</br>
+wav/LEI16(tested);</br>
+wav/LEI32(tested);</br>
 (mp3 output format will be supported in the future)
