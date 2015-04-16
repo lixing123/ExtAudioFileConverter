@@ -19,7 +19,7 @@ int main(int argc, const char * argv[]) {
         converter.outputSampleRate = 8000;
         converter.outputNumberChannels = 1;
         converter.outputBitDepth = BitDepth_24;
-        converter.outputFormatID = kAudioFormatLinearPCM;
+        converter.outputFormatID = kAudioFormatAppleLossless;
         converter.outputFileType = kAudioFileCAFType;
         [converter convert];
     }

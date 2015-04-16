@@ -161,11 +161,24 @@ void startConvert(ExtAudioConverterSettings* settings){
     settings.outputFormat.mChannelsPerFrame = self.outputNumberChannels;
     settings.outputFormat.mFormatID         = self.outputFormatID;
     
-    //only for linear PCM format
-    settings.outputFormat.mBytesPerFrame   = settings.outputFormat.mChannelsPerFrame * settings.outputFormat.mBitsPerChannel/8;
-    settings.outputFormat.mBytesPerPacket  = settings.outputFormat.mBytesPerFrame;
-    settings.outputFormat.mFramesPerPacket = 1;
-    settings.outputFormat.mFormatFlags     = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
+    switch (self.outputFormatID) {
+        case kAudioFormatLinearPCM:{
+            settings.outputFormat.mBytesPerFrame   = settings.outputFormat.mChannelsPerFrame * settings.outputFormat.mBitsPerChannel/8;
+            settings.outputFormat.mBytesPerPacket  = settings.outputFormat.mBytesPerFrame;
+            settings.outputFormat.mFramesPerPacket = 1;
+            settings.outputFormat.mFormatFlags     = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
+            break;
+        }
+        case kAudioFormatAppleIMA4:{
+            settings.outputFormat.mBytesPerFrame   = settings.outputFormat.mChannelsPerFrame * settings.outputFormat.mBitsPerChannel/8;
+            settings.outputFormat.mBytesPerPacket  = settings.outputFormat.mBytesPerFrame;
+            settings.outputFormat.mFramesPerPacket = 1;
+            settings.outputFormat.mFormatFlags     = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
+            break;
+        }
+        default:
+            break;
+    }
     
     //Create output file
     //if output file path is invalid, this may return an error with 'wht?'
