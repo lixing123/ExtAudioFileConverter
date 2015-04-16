@@ -47,3 +47,4 @@ caf/wav(tested);
 Available Output file type/format type:
 wav/LEI16(tested);
 wav/LEI32(tested);
+(mp3 output format will be supported in the future)
