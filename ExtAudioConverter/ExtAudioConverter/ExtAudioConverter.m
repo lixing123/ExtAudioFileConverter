@@ -9,14 +9,14 @@
 #import "ExtAudioConverter.h"
 
 typedef struct ExtAudioConverterSettings{
-    AudioStreamBasicDescription inputPCMFormat;
-    AudioStreamBasicDescription outputFormat;
+    AudioStreamBasicDescription   inputPCMFormat;
+    AudioStreamBasicDescription   outputFormat;
     
-    ExtAudioFileRef             inputFile;
-    AudioFileID                 outputFile;
+    ExtAudioFileRef               inputFile;
+    AudioFileID                   outputFile;
     
     AudioStreamPacketDescription* inputPacketDescriptions;
-    SInt64 outputFileStartingPacketCount;
+    SInt64                        outputFileStartingPacketCount;
 }ExtAudioConverterSettings;
 
 static void CheckError(OSStatus error, const char *operation)
@@ -72,10 +72,10 @@ void startConvert(ExtAudioConverterSettings* settings){
     settings->outputFileStartingPacketCount = 0;
     while (1) {
         AudioBufferList outputBufferList;
-        outputBufferList.mNumberBuffers = 1;
+        outputBufferList.mNumberBuffers              = 1;
         outputBufferList.mBuffers[0].mNumberChannels = settings->outputFormat.mChannelsPerFrame;
-        outputBufferList.mBuffers[0].mDataByteSize = sizePerBuffer;
-        outputBufferList.mBuffers[0].mData = outputBuffer;
+        outputBufferList.mBuffers[0].mDataByteSize   = sizePerBuffer;
+        outputBufferList.mBuffers[0].mData           = outputBuffer;
         
         UInt32 framesCount = packetsPerBuffer;
         
@@ -162,10 +162,10 @@ void startConvert(ExtAudioConverterSettings* settings){
     settings.outputFormat.mFormatID         = self.outputFormatID;
     
     //only for linear PCM format
-    settings.outputFormat.mBytesPerFrame = settings.outputFormat.mChannelsPerFrame * settings.outputFormat.mBitsPerChannel/8;
-    settings.outputFormat.mBytesPerPacket = settings.outputFormat.mBytesPerFrame;
+    settings.outputFormat.mBytesPerFrame   = settings.outputFormat.mChannelsPerFrame * settings.outputFormat.mBitsPerChannel/8;
+    settings.outputFormat.mBytesPerPacket  = settings.outputFormat.mBytesPerFrame;
     settings.outputFormat.mFramesPerPacket = 1;
-    settings.outputFormat.mFormatFlags = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
+    settings.outputFormat.mFormatFlags     = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
     
     //Create output file
     //if output file path is invalid, this may return an error with 'wht?'
@@ -179,14 +179,14 @@ void startConvert(ExtAudioConverterSettings* settings){
     
     //Set input file's client data format
     //Must be PCM, thus as we say, "when you convert data, I want to receive PCM format"
-    settings.inputPCMFormat.mSampleRate = settings.outputFormat.mSampleRate;
-    settings.inputPCMFormat.mFormatID = kAudioFormatLinearPCM;
-    settings.inputPCMFormat.mFormatFlags = kAudioFormatFlagIsBigEndian | kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
-    settings.inputPCMFormat.mFramesPerPacket = 1;
-    settings.inputPCMFormat.mChannelsPerFrame = 2;
-    settings.inputPCMFormat.mBytesPerFrame = 4;
-    settings.inputPCMFormat.mBytesPerPacket = 4;
-    settings.inputPCMFormat.mBitsPerChannel = 16;
+    settings.inputPCMFormat.mSampleRate       = settings.outputFormat.mSampleRate;
+    settings.inputPCMFormat.mFormatID         = kAudioFormatLinearPCM;
+    settings.inputPCMFormat.mFormatFlags      = settings.outputFormat.mFormatFlags;
+    settings.inputPCMFormat.mFramesPerPacket  = 1;
+    settings.inputPCMFormat.mChannelsPerFrame = settings.outputFormat.mChannelsPerFrame;
+    settings.inputPCMFormat.mBitsPerChannel   = settings.outputFormat.mBitsPerChannel;
+    settings.inputPCMFormat.mBytesPerFrame    = settings.inputPCMFormat.mBitsPerChannel/8 * settings.inputPCMFormat.mChannelsPerFrame;
+    settings.inputPCMFormat.mBytesPerPacket   = settings.inputPCMFormat.mBitsPerChannel/8 * settings.inputPCMFormat.mChannelsPerFrame;;
     
     CheckError(ExtAudioFileSetProperty(settings.inputFile,
                                        kExtAudioFileProperty_ClientDataFormat,

@@ -17,6 +17,10 @@ int main(int argc, const char * argv[]) {
         
         //TODO:if the output sample rate is not 44100, voice duration will be wrong
         converter.outputSampleRate = 8000;
+        converter.outputNumberChannels = 1;
+        converter.outputBitDepth = BitDepth_24;
+        converter.outputFormatID = kAudioFormatLinearPCM;
+        converter.outputFileType = kAudioFileCAFType;
         [converter convert];
     }
     return 0;
