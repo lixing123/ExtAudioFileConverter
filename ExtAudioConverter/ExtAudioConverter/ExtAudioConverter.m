@@ -93,14 +93,12 @@ void startConvert(ExtAudioConverterSettings* settings){
         CheckError(AudioFileWritePackets(settings->outputFile,
                                          NO,
                                          framesCount,
-                                         //settings->inputPacketDescriptions?settings->inputPacketDescriptions:nil,
                                          NULL,
-                                         settings->outputFileStartingPacketCount/settings->outputFormat.mBytesPerPacket,//为什么要除以bytesPerPacket?
-                                         //settings->outputFileStartingPacketCount,
+                                         settings->outputFileStartingPacketCount/settings->outputFormat.mBytesPerPacket,//why divided by sbytesPerPacket?
                                          &framesCount,
                                          outputBufferList.mBuffers[0].mData),
                    "AudioFileWritePackets failed");
-        //NSLog(@"packet count:%lld",settings->outputFileStartingPacketCount);
+        NSLog(@"packet count:%lld",settings->outputFileStartingPacketCount);
         settings->outputFileStartingPacketCount += framesCount*settings->outputFormat.mBytesPerPacket;
     }
 }
@@ -181,7 +179,7 @@ void startConvert(ExtAudioConverterSettings* settings){
     
     //Set input file's client data format
     //Must be PCM, thus as we say, "when you convert data, I want to receive PCM format"
-    settings.inputPCMFormat.mSampleRate = 44100;
+    settings.inputPCMFormat.mSampleRate = settings.outputFormat.mSampleRate;
     settings.inputPCMFormat.mFormatID = kAudioFormatLinearPCM;
     settings.inputPCMFormat.mFormatFlags = kAudioFormatFlagIsBigEndian | kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
     settings.inputPCMFormat.mFramesPerPacket = 1;
