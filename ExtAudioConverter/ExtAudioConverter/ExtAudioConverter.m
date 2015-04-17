@@ -13,6 +13,7 @@ typedef struct ExtAudioConverterSettings{
     AudioStreamBasicDescription   outputFormat;
     
     ExtAudioFileRef               inputFile;
+    //TODO:change AudioFileID to ExtAudioFileRef
     AudioFileID                   outputFile;
     
     AudioStreamPacketDescription* inputPacketDescriptions;
@@ -161,6 +162,24 @@ void startConvert(ExtAudioConverterSettings* settings){
     settings.outputFormat.mChannelsPerFrame = self.outputNumberChannels;
     settings.outputFormat.mFormatID         = self.outputFormatID;
     
+    if (self.outputFormatID==kAudioFormatLinearPCM) {
+        settings.outputFormat.mBytesPerFrame   = settings.outputFormat.mChannelsPerFrame * settings.outputFormat.mBitsPerChannel/8;
+        settings.outputFormat.mBytesPerPacket  = settings.outputFormat.mBytesPerFrame;
+        settings.outputFormat.mFramesPerPacket = 1;
+        settings.outputFormat.mFormatFlags     = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
+    }else{
+        //Set compressed format
+        UInt32 size = sizeof(settings.outputFormat);
+        CheckError(AudioFormatGetProperty(kAudioFormatProperty_FormatInfo,
+                                          0,
+                                          NULL,
+                                          &size,
+                                          &settings.outputFormat),
+                   "AudioFormatGetProperty kAudioFormatProperty_FormatInfo failed");
+    }
+    NSLog(@"output format:%@",[self descriptionForAudioFormat:settings.outputFormat]);
+    
+    /*
     switch (self.outputFormatID) {
         case kAudioFormatLinearPCM:{
             settings.outputFormat.mBytesPerFrame   = settings.outputFormat.mChannelsPerFrame * settings.outputFormat.mBitsPerChannel/8;
@@ -178,7 +197,7 @@ void startConvert(ExtAudioConverterSettings* settings){
         }
         default:
             break;
-    }
+    }*/
     
     //Create output file
     //if output file path is invalid, this may return an error with 'wht?'
@@ -190,22 +209,42 @@ void startConvert(ExtAudioConverterSettings* settings){
                                       &settings.outputFile),
                "Create output file failed");
     
+    /*
+     //Extended version of output file creation
+    CheckError(ExtAudioFileCreateWithURL((__bridge CFURLRef)outputURL,
+                                         self.outputFileType,
+                                         &settings.outputFormat,
+                                         NULL,
+                                         kAudioFileFlags_EraseFile,
+                                         &settings.outputFile),
+               "Create output file failed");
+     */
+    
     //Set input file's client data format
     //Must be PCM, thus as we say, "when you convert data, I want to receive PCM format"
-    settings.inputPCMFormat.mSampleRate       = settings.outputFormat.mSampleRate;
-    settings.inputPCMFormat.mFormatID         = kAudioFormatLinearPCM;
-    settings.inputPCMFormat.mFormatFlags      = settings.outputFormat.mFormatFlags;
-    settings.inputPCMFormat.mFramesPerPacket  = 1;
-    settings.inputPCMFormat.mChannelsPerFrame = settings.outputFormat.mChannelsPerFrame;
-    settings.inputPCMFormat.mBitsPerChannel   = settings.outputFormat.mBitsPerChannel;
-    settings.inputPCMFormat.mBytesPerFrame    = settings.inputPCMFormat.mBitsPerChannel/8 * settings.inputPCMFormat.mChannelsPerFrame;
-    settings.inputPCMFormat.mBytesPerPacket   = settings.inputPCMFormat.mBitsPerChannel/8 * settings.inputPCMFormat.mChannelsPerFrame;;
+    if (settings.outputFormat.mFormatID==kAudioFormatLinearPCM) {
+        settings.inputPCMFormat = settings.outputFormat;
+    }else{
+        settings.inputPCMFormat.mFormatID = kAudioFormatLinearPCM;
+        settings.inputPCMFormat.mSampleRate = settings.outputFormat.mSampleRate;
+        //TODO:set format flags for both OS X and iOS, for all versions
+        settings.inputPCMFormat.mFormatFlags = kAudioFormatFlagIsPacked | kAudioFormatFlagIsSignedInteger;
+        //TODO:check if size of SInt16 is always suitable
+        settings.inputPCMFormat.mBitsPerChannel = 8 * sizeof(SInt16);
+        settings.inputPCMFormat.mChannelsPerFrame = settings.outputFormat.mChannelsPerFrame;
+        //TODO:check if this is suitable for both interleaved/noninterleaved
+        settings.inputPCMFormat.mBytesPerPacket = settings.inputPCMFormat.mBytesPerFrame = settings.inputPCMFormat.mChannelsPerFrame*sizeof(SInt16);
+        settings.inputPCMFormat.mFramesPerPacket = 1;
+    }
+    NSLog(@"Client data format:%@",[self descriptionForAudioFormat:settings.inputPCMFormat]);
     
     CheckError(ExtAudioFileSetProperty(settings.inputFile,
                                        kExtAudioFileProperty_ClientDataFormat,
                                        sizeof(settings.inputPCMFormat),
                                        &settings.inputPCMFormat),
                "Setting client data format of input file failed");
+    
+    //TODO:check if necessary to set client data format of output file
     
     printf("Start converting...\n");
     startConvert(&settings);
@@ -215,5 +254,84 @@ void startConvert(ExtAudioConverterSettings* settings){
     AudioFileClose(settings.outputFile);
     return YES;
 }
+
+-(NSString*)descriptionForAudioFormat:(AudioStreamBasicDescription) audioFormat
+{
+    NSMutableString *description = [NSMutableString new];
+    
+    // From https://developer.apple.com/library/ios/documentation/MusicAudio/Conceptual/AudioUnitHostingGuide_iOS/ConstructingAudioUnitApps/ConstructingAudioUnitApps.html (Listing 2-8)
+    char formatIDString[5];
+    UInt32 formatID = CFSwapInt32HostToBig (audioFormat.mFormatID);
+    bcopy (&formatID, formatIDString, 4);
+    formatIDString[4] = '\0';
+    
+    [description appendString:@"\n"];
+    [description appendFormat:@"Sample Rate:         %10.0f \n",  audioFormat.mSampleRate];
+    [description appendFormat:@"Format ID:           %10s \n",    formatIDString];
+    [description appendFormat:@"Format Flags:        %10X \n",    (unsigned int)audioFormat.mFormatFlags];
+    [description appendFormat:@"Bytes per Packet:    %10d \n",    (unsigned int)audioFormat.mBytesPerPacket];
+    [description appendFormat:@"Frames per Packet:   %10d \n",    (unsigned int)audioFormat.mFramesPerPacket];
+    [description appendFormat:@"Bytes per Frame:     %10d \n",    (unsigned int)audioFormat.mBytesPerFrame];
+    [description appendFormat:@"Channels per Frame:  %10d \n",    (unsigned int)audioFormat.mChannelsPerFrame];
+    [description appendFormat:@"Bits per Channel:    %10d \n",    (unsigned int)audioFormat.mBitsPerChannel];
+    
+    // Add flags (supposing standard flags).
+    [description appendString:[self descriptionForStandardFlags:audioFormat.mFormatFlags]];
+    
+    return [NSString stringWithString:description];
+}
+
+-(NSString*)descriptionForStandardFlags:(UInt32) mFormatFlags
+{
+    NSMutableString *description = [NSMutableString new];
+    
+    if (mFormatFlags & kAudioFormatFlagIsFloat)
+    { [description appendString:@"kAudioFormatFlagIsFloat \n"]; }
+    if (mFormatFlags & kAudioFormatFlagIsBigEndian)
+    { [description appendString:@"kAudioFormatFlagIsBigEndian \n"]; }
+    if (mFormatFlags & kAudioFormatFlagIsSignedInteger)
+    { [description appendString:@"kAudioFormatFlagIsSignedInteger \n"]; }
+    if (mFormatFlags & kAudioFormatFlagIsPacked)
+    { [description appendString:@"kAudioFormatFlagIsPacked \n"]; }
+    if (mFormatFlags & kAudioFormatFlagIsAlignedHigh)
+    { [description appendString:@"kAudioFormatFlagIsAlignedHigh \n"]; }
+    if (mFormatFlags & kAudioFormatFlagIsNonInterleaved)
+    { [description appendString:@"kAudioFormatFlagIsNonInterleaved \n"]; }
+    if (mFormatFlags & kAudioFormatFlagIsNonMixable)
+    { [description appendString:@"kAudioFormatFlagIsNonMixable \n"]; }
+    if (mFormatFlags & kAudioFormatFlagsAreAllClear)
+    { [description appendString:@"kAudioFormatFlagsAreAllClear \n"]; }
+    if (mFormatFlags & kLinearPCMFormatFlagIsFloat)
+    { [description appendString:@"kLinearPCMFormatFlagIsFloat \n"]; }
+    if (mFormatFlags & kLinearPCMFormatFlagIsBigEndian)
+    { [description appendString:@"kLinearPCMFormatFlagIsBigEndian \n"]; }
+    if (mFormatFlags & kLinearPCMFormatFlagIsSignedInteger)
+    { [description appendString:@"kLinearPCMFormatFlagIsSignedInteger \n"]; }
+    if (mFormatFlags & kLinearPCMFormatFlagIsPacked)
+    { [description appendString:@"kLinearPCMFormatFlagIsPacked \n"]; }
+    if (mFormatFlags & kLinearPCMFormatFlagIsAlignedHigh)
+    { [description appendString:@"kLinearPCMFormatFlagIsAlignedHigh \n"]; }
+    if (mFormatFlags & kLinearPCMFormatFlagIsNonInterleaved)
+    { [description appendString:@"kLinearPCMFormatFlagIsNonInterleaved \n"]; }
+    if (mFormatFlags & kLinearPCMFormatFlagIsNonMixable)
+    { [description appendString:@"kLinearPCMFormatFlagIsNonMixable \n"]; }
+    if (mFormatFlags & kLinearPCMFormatFlagsSampleFractionShift)
+    { [description appendString:@"kLinearPCMFormatFlagsSampleFractionShift \n"]; }
+    if (mFormatFlags & kLinearPCMFormatFlagsSampleFractionMask)
+    { [description appendString:@"kLinearPCMFormatFlagsSampleFractionMask \n"]; }
+    if (mFormatFlags & kLinearPCMFormatFlagsAreAllClear)
+    { [description appendString:@"kLinearPCMFormatFlagsAreAllClear \n"]; }
+    if (mFormatFlags & kAppleLosslessFormatFlag_16BitSourceData)
+    { [description appendString:@"kAppleLosslessFormatFlag_16BitSourceData \n"]; }
+    if (mFormatFlags & kAppleLosslessFormatFlag_20BitSourceData)
+    { [description appendString:@"kAppleLosslessFormatFlag_20BitSourceData \n"]; }
+    if (mFormatFlags & kAppleLosslessFormatFlag_24BitSourceData)
+    { [description appendString:@"kAppleLosslessFormatFlag_24BitSourceData \n"]; }
+    if (mFormatFlags & kAppleLosslessFormatFlag_32BitSourceData)
+    { [description appendString:@"kAppleLosslessFormatFlag_32BitSourceData \n"]; }
+    
+    return [NSString stringWithString:description];
+}
+
 
 @end
