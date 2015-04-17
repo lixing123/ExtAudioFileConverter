@@ -44,11 +44,7 @@ Some parameter combinations is impossible, like mp3 file format together with wa
 
 
 
-###Available Input file type/format type:</br>
-mp3/mp3(tested);</br>
-caf/wav(tested);</br>
-
-###Available Output file type/format type:</br>
-wav/LEI16(tested);</br>
-wav/LEI32(tested);</br>
-(mp3 output format will be supported in the future)
+###For mp3 format conversion
+MP3 encode is patented by its inventor, so Apple doesn't include the encode algorithm in its APIs, but include the decode algorithm.
+So we can now convert from mp3 file to other formats, but can't convert to mp3 format.
+We will use other open source mp3 codec, like lame, to convert to mp3 format.
