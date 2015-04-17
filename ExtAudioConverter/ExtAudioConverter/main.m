@@ -13,13 +13,15 @@ int main(int argc, const char * argv[]) {
     @autoreleasepool {
         ExtAudioConverter* converter = [[ExtAudioConverter alloc] init];
         converter.inputFile =  @"/Users/lixing/Desktop/playAndRecord.caf";
-        converter.outputFile = @"/Users/lixing/Desktop/output.wav";
+        converter.inputFile =  @"/Users/xingli/Desktop/input.mp3";
+        converter.outputFile = @"/Users/xingli/Desktop/output.caf";
         
-        //TODO:if the output sample rate is not 44100, voice duration will be wrong
-        converter.outputSampleRate = 8000;
+        //TODO:some option combinations are not valid.
+        //Check them out
+        converter.outputSampleRate = 44100;
         converter.outputNumberChannels = 1;
         converter.outputBitDepth = BitDepth_24;
-        converter.outputFormatID = kAudioFormatAppleLossless;
+        converter.outputFormatID = kAudioFormatLinearPCM;
         converter.outputFileType = kAudioFileCAFType;
         [converter convert];
     }

@@ -13,8 +13,7 @@ typedef struct ExtAudioConverterSettings{
     AudioStreamBasicDescription   outputFormat;
     
     ExtAudioFileRef               inputFile;
-    //TODO:change AudioFileID to ExtAudioFileRef
-    AudioFileID                   outputFile;
+    ExtAudioFileRef               outputFile;
     
     AudioStreamPacketDescription* inputPacketDescriptions;
     SInt64                        outputFileStartingPacketCount;
@@ -41,34 +40,10 @@ void startConvert(ExtAudioConverterSettings* settings){
     //Determine the proper buffer size and calculate number of packets per buffer
     //for CBR and VBR format
     UInt32 sizePerBuffer = 32*1024;//32KB is a good starting point
-    UInt32 sizePerPacket = settings->outputFormat.mBytesPerPacket;
-    UInt32 packetsPerBuffer;
-    
-    //For a format that uses variable packet size
-    UInt32 size = sizeof(sizePerPacket);
-    if (sizePerPacket==0) {
-        CheckError(ExtAudioFileGetProperty(settings->inputFile,
-                                           kExtAudioFileProperty_FileMaxPacketSize,
-                                           &size,
-                                           &sizePerPacket),
-                   "ExtAudioFileGetProperty kExtAudioFileProperty_FileMaxPacketSize failed");
-        if (sizePerBuffer<sizePerPacket) {
-            sizePerBuffer = sizePerPacket;
-        }
-        
-        packetsPerBuffer = sizePerBuffer/sizePerPacket;
-        settings->inputPacketDescriptions = (AudioStreamPacketDescription*)malloc(packetsPerBuffer*sizeof(AudioStreamPacketDescription));
-    }else{//For a format that uses Constant packet size
-        packetsPerBuffer = sizePerBuffer/sizePerPacket;
-    }
+    UInt32 framesPerBuffer = sizePerBuffer/sizeof(SInt16);
     
     // allocate destination buffer
     UInt8 *outputBuffer = (UInt8 *)malloc(sizeof(UInt8) * sizePerBuffer);
-    
-    AudioConverterRef audioConverter;
-    AudioConverterNew(&settings->inputPCMFormat,
-                      &settings->outputFormat,
-                      &audioConverter);
     
     settings->outputFileStartingPacketCount = 0;
     while (1) {
@@ -78,28 +53,35 @@ void startConvert(ExtAudioConverterSettings* settings){
         outputBufferList.mBuffers[0].mDataByteSize   = sizePerBuffer;
         outputBufferList.mBuffers[0].mData           = outputBuffer;
         
-        UInt32 framesCount = packetsPerBuffer;
+        UInt32 framesCount = framesPerBuffer;
         
         CheckError(ExtAudioFileRead(settings->inputFile,
                                     &framesCount,
                                     &outputBufferList),
                    "ExtAudioFileRead failed");
-        
+                
         if (framesCount==0) {
             printf("Done reading from input file\n");
             return;
         }
+        NSLog(@"frames read:%d",framesCount);
         
         //Write the converted data to the output file
+        /*
         CheckError(AudioFileWritePackets(settings->outputFile,
                                          NO,
                                          framesCount,
-                                         NULL,
+                                         settings->inputPacketDescriptions?settings->inputPacketDescriptions:NULL,
                                          settings->outputFileStartingPacketCount/settings->outputFormat.mBytesPerPacket,//why divided by sbytesPerPacket?
                                          &framesCount,
                                          outputBufferList.mBuffers[0].mData),
                    "AudioFileWritePackets failed");
-        NSLog(@"packet count:%lld",settings->outputFileStartingPacketCount);
+         */
+        CheckError(ExtAudioFileWrite(settings->outputFile,
+                                     framesCount,
+                                     &outputBufferList),
+                   "ExtAudioFileWrite failed");
+        //NSLog(@"packet count:%lld",settings->outputFileStartingPacketCount);
         settings->outputFileStartingPacketCount += framesCount*settings->outputFormat.mBytesPerPacket;
     }
 }
@@ -179,38 +161,11 @@ void startConvert(ExtAudioConverterSettings* settings){
     }
     NSLog(@"output format:%@",[self descriptionForAudioFormat:settings.outputFormat]);
     
-    /*
-    switch (self.outputFormatID) {
-        case kAudioFormatLinearPCM:{
-            settings.outputFormat.mBytesPerFrame   = settings.outputFormat.mChannelsPerFrame * settings.outputFormat.mBitsPerChannel/8;
-            settings.outputFormat.mBytesPerPacket  = settings.outputFormat.mBytesPerFrame;
-            settings.outputFormat.mFramesPerPacket = 1;
-            settings.outputFormat.mFormatFlags     = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
-            break;
-        }
-        case kAudioFormatAppleIMA4:{
-            settings.outputFormat.mBytesPerFrame   = settings.outputFormat.mChannelsPerFrame * settings.outputFormat.mBitsPerChannel/8;
-            settings.outputFormat.mBytesPerPacket  = settings.outputFormat.mBytesPerFrame;
-            settings.outputFormat.mFramesPerPacket = 1;
-            settings.outputFormat.mFormatFlags     = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
-            break;
-        }
-        default:
-            break;
-    }*/
-    
     //Create output file
     //if output file path is invalid, this may return an error with 'wht?'
     NSURL* outputURL = [NSURL fileURLWithPath:self.outputFile];
-    CheckError(AudioFileCreateWithURL((__bridge CFURLRef)outputURL,
-                                      self.outputFileType,
-                                      &settings.outputFormat,
-                                      kAudioFileFlags_EraseFile,
-                                      &settings.outputFile),
-               "Create output file failed");
     
-    /*
-     //Extended version of output file creation
+    //create output file
     CheckError(ExtAudioFileCreateWithURL((__bridge CFURLRef)outputURL,
                                          self.outputFileType,
                                          &settings.outputFormat,
@@ -218,7 +173,6 @@ void startConvert(ExtAudioConverterSettings* settings){
                                          kAudioFileFlags_EraseFile,
                                          &settings.outputFile),
                "Create output file failed");
-     */
     
     //Set input file's client data format
     //Must be PCM, thus as we say, "when you convert data, I want to receive PCM format"
@@ -244,14 +198,19 @@ void startConvert(ExtAudioConverterSettings* settings){
                                        &settings.inputPCMFormat),
                "Setting client data format of input file failed");
     
-    //TODO:check if necessary to set client data format of output file
+    //If the file has a client data format, then the audio data in ioData is translated from the client format to the file data format, via theExtAudioFile's internal AudioConverter.
+    CheckError(ExtAudioFileSetProperty(settings.outputFile,
+                                       kExtAudioFileProperty_ClientDataFormat,
+                                       sizeof(settings.inputPCMFormat),
+                                       &settings.inputPCMFormat),
+               "Setting client data format of input file failed");
     
     printf("Start converting...\n");
     startConvert(&settings);
     
     ExtAudioFileDispose(settings.inputFile);
-    //AudioFileClose function is needed, or else for .wav output file the duration will be 0
-    AudioFileClose(settings.outputFile);
+    //AudioFileClose/ExtAudioFileDispose function is needed, or else for .wav output file the duration will be 0
+    ExtAudioFileDispose(settings.outputFile);
     return YES;
 }
 
