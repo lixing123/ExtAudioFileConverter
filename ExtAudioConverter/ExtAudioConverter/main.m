@@ -14,15 +14,15 @@ int main(int argc, const char * argv[]) {
         ExtAudioConverter* converter = [[ExtAudioConverter alloc] init];
         converter.inputFile =  @"/Users/lixing/Desktop/playAndRecord.caf";
         converter.inputFile =  @"/Users/xingli/Desktop/input.mp3";
-        converter.outputFile = @"/Users/xingli/Desktop/output.caf";
+        converter.outputFile = @"/Users/xingli/Desktop/output.wav";
         
         //TODO:some option combinations are not valid.
         //Check them out
         converter.outputSampleRate = 44100;
-        converter.outputNumberChannels = 1;
-        converter.outputBitDepth = BitDepth_24;
+        converter.outputNumberChannels = 2;
+        converter.outputBitDepth = BitDepth_8;
         converter.outputFormatID = kAudioFormatLinearPCM;
-        converter.outputFileType = kAudioFileCAFType;
+        converter.outputFileType = kAudioFileAIFFType;
         [converter convert];
     }
     return 0;

@@ -66,17 +66,6 @@ void startConvert(ExtAudioConverterSettings* settings){
         }
         NSLog(@"frames read:%d",framesCount);
         
-        //Write the converted data to the output file
-        /*
-        CheckError(AudioFileWritePackets(settings->outputFile,
-                                         NO,
-                                         framesCount,
-                                         settings->inputPacketDescriptions?settings->inputPacketDescriptions:NULL,
-                                         settings->outputFileStartingPacketCount/settings->outputFormat.mBytesPerPacket,//why divided by sbytesPerPacket?
-                                         &framesCount,
-                                         outputBufferList.mBuffers[0].mData),
-                   "AudioFileWritePackets failed");
-         */
         CheckError(ExtAudioFileWrite(settings->outputFile,
                                      framesCount,
                                      &outputBufferList),
@@ -115,29 +104,7 @@ void startConvert(ExtAudioConverterSettings* settings){
                                    &settings.inputFile),
                "ExtAudioFileOpenURL failed");
     
-    //Get input file's format
-    
-    
-    //Set output format
-    if (self.outputSampleRate==0) {
-        self.outputSampleRate = 44100;
-    }
-    
-    if (self.outputNumberChannels==0) {
-        self.outputNumberChannels = 2;
-    }
-    
-    if (self.outputBitDepth==0) {
-        self.outputBitDepth = 16;
-    }
-    
-    if (self.outputFormatID==0) {
-        self.outputFormatID = kAudioFormatLinearPCM;
-    }
-    
-    if (self.outputFileType==0) {
-        self.outputFileType = kAudioFileWAVEType;
-    }
+    [self validateInput:&settings];
     
     settings.outputFormat.mSampleRate       = self.outputSampleRate;
     settings.outputFormat.mBitsPerChannel   = self.outputBitDepth;
@@ -149,6 +116,10 @@ void startConvert(ExtAudioConverterSettings* settings){
         settings.outputFormat.mBytesPerPacket  = settings.outputFormat.mBytesPerFrame;
         settings.outputFormat.mFramesPerPacket = 1;
         settings.outputFormat.mFormatFlags     = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
+        //the aiff type only support big-endian
+        if (self.outputFileType==kAudioFileAIFFType) {
+            settings.outputFormat.mFormatFlags |= kAudioFormatFlagIsBigEndian;
+        }
     }else{
         //Set compressed format
         UInt32 size = sizeof(settings.outputFormat);
@@ -172,7 +143,7 @@ void startConvert(ExtAudioConverterSettings* settings){
                                          NULL,
                                          kAudioFileFlags_EraseFile,
                                          &settings.outputFile),
-               "Create output file failed");
+               "Create output file failed, the output file type and output format pair may not match");
     
     //Set input file's client data format
     //Must be PCM, thus as we say, "when you convert data, I want to receive PCM format"
@@ -212,6 +183,52 @@ void startConvert(ExtAudioConverterSettings* settings){
     //AudioFileClose/ExtAudioFileDispose function is needed, or else for .wav output file the duration will be 0
     ExtAudioFileDispose(settings.outputFile);
     return YES;
+}
+
+//Check if the input combination is valid
+-(void)validateInput:(ExtAudioConverterSettings*)settigs{
+    //Set default output format
+    if (self.outputSampleRate==0) {
+        self.outputSampleRate = 44100;
+    }
+    
+    if (self.outputNumberChannels==0) {
+        self.outputNumberChannels = 2;
+    }
+    
+    if (self.outputBitDepth==0) {
+        self.outputBitDepth = 16;
+    }
+    
+    if (self.outputFormatID==0) {
+        self.outputFormatID = kAudioFormatLinearPCM;
+    }
+    
+    if (self.outputFileType==0) {
+        self.outputFileType = kAudioFileWAVEType;
+    }
+    
+    BOOL valid;
+    switch (self.outputFileType) {
+        case kAudioFileWAVEType:{//for wave file format
+            //WAVE file type only support PCM, alaw and ulaw? copy from afconvert -hf
+            valid = self.outputFormatID==kAudioFormatLinearPCM || self.outputFormatID==kAudioFormatALaw || self.outputFormatID==kAudioFormatULaw;
+            break;
+        }
+        case kAudioFileAIFFType:{
+            //AIFF only support PCM format
+            valid = self.outputFormatID==kAudioFormatLinearPCM;
+            break;
+        }
+        default:
+            break;
+    }
+    
+    if (!valid) {
+        NSLog(@"the file format and data format pair is not valid");
+        exit(-1);
+    }
+
 }
 
 -(NSString*)descriptionForAudioFormat:(AudioStreamBasicDescription) audioFormat
