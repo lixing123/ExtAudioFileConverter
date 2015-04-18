@@ -208,7 +208,7 @@ void startConvert(ExtAudioConverterSettings* settings){
         self.outputFileType = kAudioFileWAVEType;
     }
     
-    BOOL valid;
+    BOOL valid = YES;
     switch (self.outputFileType) {
         case kAudioFileWAVEType:{//for wave file format
             //WAVE file type only support PCM, alaw and ulaw? copy from afconvert -hf
