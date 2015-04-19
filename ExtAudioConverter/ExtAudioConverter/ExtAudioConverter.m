@@ -174,7 +174,7 @@ void startConvert(ExtAudioConverterSettings* settings){
                                        kExtAudioFileProperty_ClientDataFormat,
                                        sizeof(settings.inputPCMFormat),
                                        &settings.inputPCMFormat),
-               "Setting client data format of input file failed");
+               "Setting client data format of output file failed");
     
     printf("Start converting...\n");
     startConvert(&settings);
@@ -205,18 +205,67 @@ void startConvert(ExtAudioConverterSettings* settings){
     }
     
     if (self.outputFileType==0) {
-        self.outputFileType = kAudioFileWAVEType;
+        //caf type is the most powerful file format
+        self.outputFileType = kAudioFileCAFType;
     }
     
     BOOL valid = YES;
+    //The file format and data format match documentatin is at: https://developer.apple.com/library/ios/documentation/MusicAudio/Conceptual/CoreAudioOverview/SupportedAudioFormatsMacOSX/SupportedAudioFormatsMacOSX.html
     switch (self.outputFileType) {
         case kAudioFileWAVEType:{//for wave file format
-            //WAVE file type only support PCM, alaw and ulaw? copy from afconvert -hf
+            //WAVE file type only support PCM, alaw and ulaw
             valid = self.outputFormatID==kAudioFormatLinearPCM || self.outputFormatID==kAudioFormatALaw || self.outputFormatID==kAudioFormatULaw;
             break;
         }
         case kAudioFileAIFFType:{
             //AIFF only support PCM format
+            valid = self.outputFormatID==kAudioFormatLinearPCM;
+            break;
+        }
+        case kAudioFileAAC_ADTSType:{
+            //aac only support aac data format
+            //TODO:kAudioFileAAC_ADTSType/kAudioFormatMPEG4AAC pair failed
+            valid = self.outputFormatID==kAudioFormatMPEG4AAC;
+            break;
+        }
+        case kAudioFileAC3Type:{
+            //convert from PCM to ac3 format is not supported
+            valid = NO;
+            break;
+        }
+        case kAudioFileAIFCType:{
+            //TODO:kAudioFileAIFCType together with kAudioFormatLinearPCM/kAudioFormatMACE3/kAudioFormatMACE6/kAudioFormatQDesign2/kAudioFormatQUALCOMM pair failed
+            valid = self.outputFormatID==kAudioFormatLinearPCM || self.outputFormatID==kAudioFormatULaw || self.outputFormatID==kAudioFormatALaw || self.outputFormatID==kAudioFormatMACE3 || self.outputFormatID==kAudioFormatMACE6 || self.outputFormatID==kAudioFormatAppleIMA4 || self.outputFormatID==kAudioFormatQDesign2 || self.outputFormatID==kAudioFormatQUALCOMM;
+            break;
+        }
+        case kAudioFileCAFType:{
+            //caf file type support almost all data format
+            //TODO:not all foramt are supported, check them out
+            valid = YES;
+            break;
+        }
+        case kAudioFileMP3Type:{
+            NSLog(@"Encoded from PCM to MP3 format is not supported yet.");
+            valid = NO;
+            break;
+        }
+        case kAudioFileMPEG4Type:{
+            //TODO: this pair failed
+            valid = self.outputFormatID==kAudioFormatMPEG4AAC;
+            break;
+        }
+        case kAudioFileM4AType:{
+            //TODO:kAudioFileM4AType/kAudioFormatMPEG4AAC pair failed
+            valid = self.outputFormatID==kAudioFormatMPEG4AAC || self.outputFormatID==kAudioFormatAppleLossless;
+            break;
+        }
+        case kAudioFileNextType:{
+            //TODO:kAudioFileNextType/kAudioFormatLinearPCM pair failed
+            valid = self.outputFormatID==kAudioFormatLinearPCM || self.outputFormatID==kAudioFormatULaw;
+            break;
+        }
+        case kAudioFileSoundDesigner2Type:{
+            //TODO:this pair failed
             valid = self.outputFormatID==kAudioFormatLinearPCM;
             break;
         }
@@ -244,7 +293,7 @@ void startConvert(ExtAudioConverterSettings* settings){
     [description appendString:@"\n"];
     [description appendFormat:@"Sample Rate:         %10.0f \n",  audioFormat.mSampleRate];
     [description appendFormat:@"Format ID:           %10s \n",    formatIDString];
-    [description appendFormat:@"Format Flags:        %10X \n",    (unsigned int)audioFormat.mFormatFlags];
+    [description appendFormat:@"Format Flags:        %10d \n",    (unsigned int)audioFormat.mFormatFlags];
     [description appendFormat:@"Bytes per Packet:    %10d \n",    (unsigned int)audioFormat.mBytesPerPacket];
     [description appendFormat:@"Frames per Packet:   %10d \n",    (unsigned int)audioFormat.mFramesPerPacket];
     [description appendFormat:@"Bytes per Frame:     %10d \n",    (unsigned int)audioFormat.mBytesPerFrame];

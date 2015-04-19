@@ -28,6 +28,7 @@ enum BitDepth{
 @property(nonatomic,assign)enum BitDepth outputBitDepth;//Default BitDepth_16
 @property(nonatomic,assign)AudioFormatID outputFormatID;//Default Linear PCM
 @property(nonatomic,assign)AudioFileTypeID outputFileType;//Default kAudioFileWAVEType
+//TODO:add bit rate parameter
 
 -(BOOL)convert;
 
