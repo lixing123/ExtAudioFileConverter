@@ -40,7 +40,8 @@ Set file format:</br>
 converter.outputFileType = kAudioFileWAVEType;
 ```
 
-Some parameter combinations is impossible, like mp3 file format together with wav data format, so please take care to check if the combinations are correct.
+Some parameter combinations is impossible, like mp3 file format together with wav data format.
+The valid file type/data format pair is described on the Apple documentation https://developer.apple.com/library/ios/documentation/MusicAudio/Conceptual/CoreAudioOverview/SupportedAudioFormatsMacOSX/SupportedAudioFormatsMacOSX.html
 
 
 
