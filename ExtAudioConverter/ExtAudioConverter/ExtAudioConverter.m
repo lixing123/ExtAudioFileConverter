@@ -120,7 +120,7 @@ void startConvert(ExtAudioConverterSettings* settings){
         settings.outputFormat.mFramesPerPacket = 1;
         settings.outputFormat.mFormatFlags     = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
         //the aiff type only support big-endian
-        if (self.outputFileType==kAudioFileAIFFType) {
+        if (self.outputFileType==kAudioFileAIFFType || self.outputFileType==kAudioFileSoundDesigner2Type) {
             settings.outputFormat.mFormatFlags |= kAudioFormatFlagIsBigEndian;
         }
     }else{
