@@ -108,6 +108,9 @@ void startConvert(ExtAudioConverterSettings* settings){
     
     settings.outputFormat.mSampleRate       = self.outputSampleRate;
     settings.outputFormat.mBitsPerChannel   = self.outputBitDepth;
+    if (self.outputFormatID==kAudioFormatMPEG4AAC) {
+        settings.outputFormat.mBitsPerChannel = 0;
+    }
     settings.outputFormat.mChannelsPerFrame = self.outputNumberChannels;
     settings.outputFormat.mFormatID         = self.outputFormatID;
     
@@ -250,7 +253,6 @@ void startConvert(ExtAudioConverterSettings* settings){
             break;
         }
         case kAudioFileMPEG4Type:{
-            //TODO: this pair failed
             valid = self.outputFormatID==kAudioFormatMPEG4AAC;
             break;
         }
@@ -269,6 +271,7 @@ void startConvert(ExtAudioConverterSettings* settings){
             valid = self.outputFormatID==kAudioFormatLinearPCM;
             break;
         }
+            //TODO:check iLBC format
         default:
             break;
     }
