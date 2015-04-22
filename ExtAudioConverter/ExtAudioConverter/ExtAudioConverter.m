@@ -120,11 +120,15 @@ void startConvert(ExtAudioConverterSettings* settings){
         settings.outputFormat.mFramesPerPacket = 1;
         settings.outputFormat.mFormatFlags     = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
         //the aiff type only support big-endian
-        if (self.outputFileType==kAudioFileAIFFType || self.outputFileType==kAudioFileSoundDesigner2Type) {
+        if (self.outputFileType==kAudioFileAIFFType || self.outputFileType==kAudioFileSoundDesigner2Type ||self.outputFileType==kAudioFileAIFCType) {
             settings.outputFormat.mFormatFlags |= kAudioFormatFlagIsBigEndian;
         }
     }else{
         //Set compressed format
+        if (self.outputFormatID==kAudioFormatMACE3) {
+            //settings.outputFormat.mBitsPerChannel = 0;
+            settings.outputFormat.mChannelsPerFrame = 0;
+        }
         UInt32 size = sizeof(settings.outputFormat);
         CheckError(AudioFormatGetProperty(kAudioFormatProperty_FormatInfo,
                                           0,
@@ -136,7 +140,7 @@ void startConvert(ExtAudioConverterSettings* settings){
     NSLog(@"output format:%@",[self descriptionForAudioFormat:settings.outputFormat]);
     
     //Create output file
-    //if output file path is invalid, this may return an error with 'wht?'
+    //if output file path is invalid, this returns an error with 'wht?'
     NSURL* outputURL = [NSURL fileURLWithPath:self.outputFile];
     
     //create output file
@@ -236,7 +240,7 @@ void startConvert(ExtAudioConverterSettings* settings){
             break;
         }
         case kAudioFileAIFCType:{
-            //TODO:kAudioFileAIFCType together with kAudioFormatLinearPCM/kAudioFormatMACE3/kAudioFormatMACE6/kAudioFormatQDesign2/kAudioFormatQUALCOMM pair failed
+            //TODO:kAudioFileAIFCType together with kAudioFormatMACE3/kAudioFormatMACE6/kAudioFormatQDesign2/kAudioFormatQUALCOMM pair failed
             valid = self.outputFormatID==kAudioFormatLinearPCM || self.outputFormatID==kAudioFormatULaw || self.outputFormatID==kAudioFormatALaw || self.outputFormatID==kAudioFormatMACE3 || self.outputFormatID==kAudioFormatMACE6 || self.outputFormatID==kAudioFormatAppleIMA4 || self.outputFormatID==kAudioFormatQDesign2 || self.outputFormatID==kAudioFormatQUALCOMM;
             break;
         }
@@ -256,7 +260,6 @@ void startConvert(ExtAudioConverterSettings* settings){
             break;
         }
         case kAudioFileM4AType:{
-            //TODO:kAudioFileM4AType/kAudioFormatMPEG4AAC pair failed
             valid = self.outputFormatID==kAudioFormatMPEG4AAC || self.outputFormatID==kAudioFormatAppleLossless;
             break;
         }
