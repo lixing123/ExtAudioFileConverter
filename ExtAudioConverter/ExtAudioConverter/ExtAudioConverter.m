@@ -227,7 +227,6 @@ void startConvert(ExtAudioConverterSettings* settings){
         }
         case kAudioFileAAC_ADTSType:{
             //aac only support aac data format
-            //TODO:kAudioFileAAC_ADTSType/kAudioFormatMPEG4AAC pair failed
             valid = self.outputFormatID==kAudioFormatMPEG4AAC;
             break;
         }
@@ -267,7 +266,6 @@ void startConvert(ExtAudioConverterSettings* settings){
             break;
         }
         case kAudioFileSoundDesigner2Type:{
-            //TODO:this pair failed
             valid = self.outputFormatID==kAudioFormatLinearPCM;
             break;
         }
