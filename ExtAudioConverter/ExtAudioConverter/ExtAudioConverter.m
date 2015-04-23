@@ -7,16 +7,17 @@
 //
 
 #import "ExtAudioConverter.h"
+#import "lame.h"
 
 typedef struct ExtAudioConverterSettings{
     AudioStreamBasicDescription   inputPCMFormat;
     AudioStreamBasicDescription   outputFormat;
     
     ExtAudioFileRef               inputFile;
+    CFStringRef                   outputFilePath;
     ExtAudioFileRef               outputFile;
     
     AudioStreamPacketDescription* inputPacketDescriptions;
-    SInt64                        outputFileStartingPacketCount;
 }ExtAudioConverterSettings;
 
 static void CheckError(OSStatus error, const char *operation)
@@ -43,9 +44,8 @@ void startConvert(ExtAudioConverterSettings* settings){
     UInt32 framesPerBuffer = sizePerBuffer/sizeof(SInt16);
     
     // allocate destination buffer
-    UInt8 *outputBuffer = (UInt8 *)malloc(sizeof(UInt8) * sizePerBuffer);
+    SInt16 *outputBuffer = (SInt16 *)malloc(sizeof(SInt16) * sizePerBuffer);
     
-    settings->outputFileStartingPacketCount = 0;
     while (1) {
         AudioBufferList outputBufferList;
         outputBufferList.mNumberBuffers              = 1;
@@ -59,19 +59,72 @@ void startConvert(ExtAudioConverterSettings* settings){
                                     &framesCount,
                                     &outputBufferList),
                    "ExtAudioFileRead failed");
-                
+        
         if (framesCount==0) {
             printf("Done reading from input file\n");
             return;
         }
-        NSLog(@"frames read:%d",framesCount);
+        //NSLog(@"frames read:%d",framesCount);
         
         CheckError(ExtAudioFileWrite(settings->outputFile,
                                      framesCount,
                                      &outputBufferList),
                    "ExtAudioFileWrite failed");
-        //NSLog(@"packet count:%lld",settings->outputFileStartingPacketCount);
-        settings->outputFileStartingPacketCount += framesCount*settings->outputFormat.mBytesPerPacket;
+    }
+}
+
+void startConvertMP3(ExtAudioConverterSettings* settings){
+    lame_t lame = lame_init();
+    lame_set_in_samplerate(lame, settings->inputPCMFormat.mSampleRate);
+    lame_set_num_channels(lame, settings->inputPCMFormat.mChannelsPerFrame);
+    lame_set_VBR(lame, vbr_default);
+    lame_init_params(lame);
+    
+    NSString* outputFilePath = (__bridge NSString*)settings->outputFilePath;
+    FILE* outputFile = fopen([outputFilePath cStringUsingEncoding:1], "wb");
+    
+    UInt32 sizePerBuffer = 32*1024;
+    UInt32 framesPerBuffer = sizePerBuffer/sizeof(SInt16);
+    
+    int write;
+    
+    // allocate destination buffer
+    SInt16 *outputBuffer = (SInt16 *)malloc(sizeof(SInt16) * sizePerBuffer);
+    
+    while (1) {
+        AudioBufferList outputBufferList;
+        outputBufferList.mNumberBuffers              = 1;
+        outputBufferList.mBuffers[0].mNumberChannels = settings->outputFormat.mChannelsPerFrame;
+        outputBufferList.mBuffers[0].mDataByteSize   = sizePerBuffer;
+        outputBufferList.mBuffers[0].mData           = outputBuffer;
+        
+        UInt32 framesCount = framesPerBuffer;
+        
+        CheckError(ExtAudioFileRead(settings->inputFile,
+                                    &framesCount,
+                                    &outputBufferList),
+                   "ExtAudioFileRead failed");
+        
+        SInt16 pcm_buffer[framesCount];
+        unsigned char mp3_buffer[framesCount];
+        memcpy(pcm_buffer,
+               outputBufferList.mBuffers[0].mData,
+               framesCount);
+        if (framesCount==0) {
+            printf("Done reading from input file\n");
+            return;
+        }
+        
+        //the 3rd parameter means number of samples per channel, not number of sample in pcm_buffer
+        write = lame_encode_buffer_interleaved(lame,
+                                               outputBufferList.mBuffers[0].mData,
+                                               framesCount,
+                                               mp3_buffer,
+                                               0);
+        size_t result = fwrite(mp3_buffer,
+                               1,
+                               write,
+                               outputFile);
     }
 }
 
@@ -139,13 +192,16 @@ void startConvert(ExtAudioConverterSettings* settings){
     NSURL* outputURL = [NSURL fileURLWithPath:self.outputFile];
     
     //create output file
-    CheckError(ExtAudioFileCreateWithURL((__bridge CFURLRef)outputURL,
-                                         self.outputFileType,
-                                         &settings.outputFormat,
-                                         NULL,
-                                         kAudioFileFlags_EraseFile,
-                                         &settings.outputFile),
-               "Create output file failed, the output file type and output format pair may not match");
+    settings.outputFilePath = (__bridge CFStringRef)(self.outputFile);
+    if (settings.outputFormat.mFormatID!=kAudioFormatMPEGLayer3) {
+        CheckError(ExtAudioFileCreateWithURL((__bridge CFURLRef)outputURL,
+                                             self.outputFileType,
+                                             &settings.outputFormat,
+                                             NULL,
+                                             kAudioFileFlags_EraseFile,
+                                             &settings.outputFile),
+                   "Create output file failed, the output file type and output format pair may not match");
+    }
     
     //Set input file's client data format
     //Must be PCM, thus as we say, "when you convert data, I want to receive PCM format"
@@ -172,14 +228,22 @@ void startConvert(ExtAudioConverterSettings* settings){
                "Setting client data format of input file failed");
     
     //If the file has a client data format, then the audio data in ioData is translated from the client format to the file data format, via theExtAudioFile's internal AudioConverter.
-    CheckError(ExtAudioFileSetProperty(settings.outputFile,
-                                       kExtAudioFileProperty_ClientDataFormat,
-                                       sizeof(settings.inputPCMFormat),
-                                       &settings.inputPCMFormat),
-               "Setting client data format of output file failed");
+    if (settings.outputFormat.mFormatID!=kAudioFormatMPEGLayer3) {
+        CheckError(ExtAudioFileSetProperty(settings.outputFile,
+                                           kExtAudioFileProperty_ClientDataFormat,
+                                           sizeof(settings.inputPCMFormat),
+                                           &settings.inputPCMFormat),
+                   "Setting client data format of output file failed");
+    }
+    
     
     printf("Start converting...\n");
-    startConvert(&settings);
+    if (settings.outputFormat.mFormatID==kAudioFormatMPEGLayer3) {
+        startConvertMP3(&settings);
+    }else{
+        startConvert(&settings);
+    }
+    
     
     ExtAudioFileDispose(settings.inputFile);
     //AudioFileClose/ExtAudioFileDispose function is needed, or else for .wav output file the duration will be 0
@@ -248,8 +312,7 @@ void startConvert(ExtAudioConverterSettings* settings){
         }
         case kAudioFileMP3Type:{
             //TODO:support mp3 type
-            NSLog(@"Encoded from PCM to MP3 format is not supported yet.");
-            valid = NO;
+            valid = self.outputFormatID==kAudioFormatMPEGLayer3;
             break;
         }
         case kAudioFileMPEG4Type:{

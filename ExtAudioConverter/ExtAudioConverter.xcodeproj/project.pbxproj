@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8E1086F41AE8C2AC0088E699 /* libmp3lame.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8E1086F31AE8C2AC0088E699 /* libmp3lame.a */; };
 		8EE9B5531AD67A5B0009BD0A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8EE9B5521AD67A5B0009BD0A /* main.m */; };
 		8EE9B55B1AD67A730009BD0A /* ExtAudioConverter.m in Sources */ = {isa = PBXBuildFile; fileRef = 8EE9B55A1AD67A730009BD0A /* ExtAudioConverter.m */; };
 		8EE9B55D1AD67E460009BD0A /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8EE9B55C1AD67E460009BD0A /* AudioToolbox.framework */; };
@@ -25,6 +26,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		8E1086F21AE8C2A10088E699 /* lame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lame.h; sourceTree = "<group>"; };
+		8E1086F31AE8C2AC0088E699 /* libmp3lame.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmp3lame.a; sourceTree = "<group>"; };
 		8EE9B54F1AD67A5B0009BD0A /* ExtAudioConverter */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ExtAudioConverter; sourceTree = BUILT_PRODUCTS_DIR; };
 		8EE9B5521AD67A5B0009BD0A /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		8EE9B5591AD67A730009BD0A /* ExtAudioConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExtAudioConverter.h; sourceTree = "<group>"; };
@@ -38,6 +41,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8EE9B55D1AD67E460009BD0A /* AudioToolbox.framework in Frameworks */,
+				8E1086F41AE8C2AC0088E699 /* libmp3lame.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -47,6 +51,7 @@
 		8EE9B5461AD67A5B0009BD0A = {
 			isa = PBXGroup;
 			children = (
+				8EFA3FD21AE8A09800B8CFDA /* lame */,
 				8EE9B55C1AD67E460009BD0A /* AudioToolbox.framework */,
 				8EE9B5511AD67A5B0009BD0A /* ExtAudioConverter */,
 				8EE9B5501AD67A5B0009BD0A /* Products */,
@@ -69,6 +74,15 @@
 				8EE9B55A1AD67A730009BD0A /* ExtAudioConverter.m */,
 			);
 			path = ExtAudioConverter;
+			sourceTree = "<group>";
+		};
+		8EFA3FD21AE8A09800B8CFDA /* lame */ = {
+			isa = PBXGroup;
+			children = (
+				8E1086F21AE8C2A10088E699 /* lame.h */,
+				8E1086F31AE8C2AC0088E699 /* libmp3lame.a */,
+			);
+			name = lame;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -212,6 +226,10 @@
 		8EE9B5571AD67A5B0009BD0A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -219,6 +237,10 @@
 		8EE9B5581AD67A5B0009BD0A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -242,6 +264,7 @@
 				8EE9B5581AD67A5B0009BD0A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
