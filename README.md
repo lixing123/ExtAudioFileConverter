@@ -40,15 +40,15 @@ Set file format:</br>
 converter.outputFileType = kAudioFileWAVEType;
 ```
 
-Some parameter combinations is impossible, like mp3 file format together with wav data format.
-The valid file type/data format pair is described on the Apple documentation https://developer.apple.com/library/ios/documentation/MusicAudio/Conceptual/CoreAudioOverview/SupportedAudioFormatsMacOSX/SupportedAudioFormatsMacOSX.html
+Some parameter combinations is impossible, like mp3 file format together with wav data format.</br>
+The valid file type/data format pair is described on the Apple documentation</br> https://developer.apple.com/library/ios/documentation/MusicAudio/Conceptual/CoreAudioOverview/SupportedAudioFormatsMacOSX/SupportedAudioFormatsMacOSX.html
 
 
 
 ###For mp3 format conversion
-Apple doesn't include the MP3 encode algorithm in its APIs, but include the decode algorithm.
-~~So we can now convert from mp3 file to other formats, but can't convert to mp3 format.~~
-~~We will use other open source mp3 codec, like lame, to convert to mp3 format.~~
+Apple doesn't include the MP3 encode algorithm in its APIs, but include the decode algorithm.</br>
+~~So we can now convert from mp3 file to other formats, but can't convert to mp3 format.~~</br>
+~~We will use other open source mp3 codec, like lame, to convert to mp3 format.~~</br>
 We have supported conversion to mp3 format.
 
 If you have any questions, please commit an issue, or mail me:shangwangwanwan@gmail.com.
