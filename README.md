@@ -47,5 +47,8 @@ The valid file type/data format pair is described on the Apple documentation htt
 
 ###For mp3 format conversion
 Apple doesn't include the MP3 encode algorithm in its APIs, but include the decode algorithm.
-So we can now convert from mp3 file to other formats, but can't convert to mp3 format.
-We will use other open source mp3 codec, like lame, to convert to mp3 format.
+~~So we can now convert from mp3 file to other formats, but can't convert to mp3 format.~~
+~~We will use other open source mp3 codec, like lame, to convert to mp3 format.~~
+We have supported conversion to mp3 format.
+
+If you have any questions, please commit an issue, or mail me:shangwangwanwan@gmail.com.
