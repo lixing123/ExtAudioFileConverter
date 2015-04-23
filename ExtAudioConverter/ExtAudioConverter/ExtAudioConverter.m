@@ -112,6 +112,7 @@ void startConvertMP3(ExtAudioConverterSettings* settings){
                framesCount);
         if (framesCount==0) {
             printf("Done reading from input file\n");
+            //TODO:Add lame_encode_flush for end of file
             return;
         }
         
