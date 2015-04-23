@@ -119,16 +119,11 @@ void startConvert(ExtAudioConverterSettings* settings){
         settings.outputFormat.mBytesPerPacket  = settings.outputFormat.mBytesPerFrame;
         settings.outputFormat.mFramesPerPacket = 1;
         settings.outputFormat.mFormatFlags     = kAudioFormatFlagIsSignedInteger | kAudioFormatFlagIsPacked;
-        //the aiff type only support big-endian
-        if (self.outputFileType==kAudioFileAIFFType || self.outputFileType==kAudioFileSoundDesigner2Type ||self.outputFileType==kAudioFileAIFCType) {
+        //some file type only support big-endian
+        if (self.outputFileType==kAudioFileAIFFType || self.outputFileType==kAudioFileSoundDesigner2Type || self.outputFileType==kAudioFileAIFCType || self.outputFileType==kAudioFileNextType) {
             settings.outputFormat.mFormatFlags |= kAudioFormatFlagIsBigEndian;
         }
     }else{
-        //Set compressed format
-        if (self.outputFormatID==kAudioFormatMACE3) {
-            //settings.outputFormat.mBitsPerChannel = 0;
-            settings.outputFormat.mChannelsPerFrame = 0;
-        }
         UInt32 size = sizeof(settings.outputFormat);
         CheckError(AudioFormatGetProperty(kAudioFormatProperty_FormatInfo,
                                           0,
@@ -241,7 +236,8 @@ void startConvert(ExtAudioConverterSettings* settings){
         }
         case kAudioFileAIFCType:{
             //TODO:kAudioFileAIFCType together with kAudioFormatMACE3/kAudioFormatMACE6/kAudioFormatQDesign2/kAudioFormatQUALCOMM pair failed
-            valid = self.outputFormatID==kAudioFormatLinearPCM || self.outputFormatID==kAudioFormatULaw || self.outputFormatID==kAudioFormatALaw || self.outputFormatID==kAudioFormatMACE3 || self.outputFormatID==kAudioFormatMACE6 || self.outputFormatID==kAudioFormatAppleIMA4 || self.outputFormatID==kAudioFormatQDesign2 || self.outputFormatID==kAudioFormatQUALCOMM;
+            //Since MACE3:1/MACE6:1 is obsolete, they're not supported yet
+            valid = self.outputFormatID==kAudioFormatLinearPCM || self.outputFormatID==kAudioFormatULaw || self.outputFormatID==kAudioFormatALaw || self.outputFormatID==kAudioFormatAppleIMA4 || self.outputFormatID==kAudioFormatQDesign2 || self.outputFormatID==kAudioFormatQUALCOMM;
             break;
         }
         case kAudioFileCAFType:{
@@ -251,6 +247,7 @@ void startConvert(ExtAudioConverterSettings* settings){
             break;
         }
         case kAudioFileMP3Type:{
+            //TODO:support mp3 type
             NSLog(@"Encoded from PCM to MP3 format is not supported yet.");
             valid = NO;
             break;
@@ -264,7 +261,6 @@ void startConvert(ExtAudioConverterSettings* settings){
             break;
         }
         case kAudioFileNextType:{
-            //TODO:kAudioFileNextType/kAudioFormatLinearPCM pair failed
             valid = self.outputFormatID==kAudioFormatLinearPCM || self.outputFormatID==kAudioFormatULaw;
             break;
         }
