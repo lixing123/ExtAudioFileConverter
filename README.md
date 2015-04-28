@@ -1,5 +1,5 @@
 ## An iOS project to convert audio from any format to any format.</br>
-ExtAuioConverter is an implementation of the afconvert command on OS X, </br>
+ExtAudioConverter is an implementation of the afconvert command on OS X, </br>
 so this readme file uses some hints of afconvert help documentation. For example, LEI16 means little-endian signed int with 16 bit depth.
 
 ###How to use:
