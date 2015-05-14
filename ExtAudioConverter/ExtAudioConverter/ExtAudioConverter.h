@@ -16,6 +16,8 @@ enum BitDepth{
     BitDepth_32 = 32
 };
 
+//TODO:Add delegate
+
 @interface ExtAudioConverter : NSObject
 
 //Must set
