@@ -15,7 +15,7 @@ converter.inputFile =  @"/Users/lixing/Desktop/input.caf";
 converter.outputFile = @"/Users/lixing/Desktop/output.wav";
 [converter convert];
 ```
-4. The following parameters are optional:
+The following parameters are optional:
 
 Set the sample rate:</br>
 ```objective-c
