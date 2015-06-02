@@ -4,19 +4,18 @@ so this readme file uses some hints of afconvert help documentation. For example
 
 ###How to use:
 
-1\ Link Binary with Library "AudioToolbox.framework";
+1. Link Binary with Library "AudioToolbox.framework";
 
-2\Add "ExtAudioConverter.h" and "ExtAudioConverter.m" to your project;
+2. Add "ExtAudioConverter.h" and "ExtAudioConverter.m" to your project;
 
-3\Test:
+3. Test:
 ```objective-c
 ExtAudioConverter* converter = [[ExtAudioConverter alloc] init];
 converter.inputFile =  @"/Users/lixing/Desktop/input.caf";
 converter.outputFile = @"/Users/lixing/Desktop/output.wav";
 [converter convert];
 ```
-4\
-The following parameters are optional:</br>
+4. The following parameters are optional:
 
 Set the sample rate:</br>
 ```objective-c
