@@ -12,16 +12,15 @@
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
         ExtAudioConverter* converter = [[ExtAudioConverter alloc] init];
-        converter.inputFile =  @"/Users/lixing/Desktop/playAndRecord.caf";
-        //converter.inputFile =  @"/Users/lixing/Desktop/new.m4a";
-        //converter.inputFile =  @"/Users/xingli/Desktop/input.mp3";
+        //converter.inputFile =  @"/Users/lixing/Desktop/playAndRecord.caf";
+        converter.inputFile =  @"/Users/lixing/Desktop/input.wav";
         //output file extension is for your convenience
         converter.outputFile = @"/Users/lixing/Desktop/output.mp3";
         
         //TODO:some option combinations are not valid.
         //Check them out
-        converter.outputSampleRate = 44100;
-        converter.outputNumberChannels = 2;
+        converter.outputSampleRate = 8000;
+        converter.outputNumberChannels = 1;
         converter.outputBitDepth = BitDepth_16;
         converter.outputFormatID = kAudioFormatMPEGLayer3;
         converter.outputFileType = kAudioFileMP3Type;

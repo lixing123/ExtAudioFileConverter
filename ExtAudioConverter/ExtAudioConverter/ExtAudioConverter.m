@@ -64,7 +64,6 @@ void startConvert(ExtAudioConverterSettings* settings){
             printf("Done reading from input file\n");
             return;
         }
-        //NSLog(@"frames read:%d",framesCount);
         
         CheckError(ExtAudioFileWrite(settings->outputFile,
                                      framesCount,
@@ -74,6 +73,7 @@ void startConvert(ExtAudioConverterSettings* settings){
 }
 
 void startConvertMP3(ExtAudioConverterSettings* settings){
+    //Init lame and set parameters
     lame_t lame = lame_init();
     lame_set_in_samplerate(lame, settings->inputPCMFormat.mSampleRate);
     lame_set_num_channels(lame, settings->inputPCMFormat.mChannelsPerFrame);

@@ -28,6 +28,7 @@
 /* Begin PBXFileReference section */
 		8E1086F21AE8C2A10088E699 /* lame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lame.h; sourceTree = "<group>"; };
 		8E1086F31AE8C2AC0088E699 /* libmp3lame.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmp3lame.a; sourceTree = "<group>"; };
+		8EA190671B5E3B42005EB05B /* input.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = input.wav; sourceTree = "<group>"; };
 		8EE9B54F1AD67A5B0009BD0A /* ExtAudioConverter */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ExtAudioConverter; sourceTree = BUILT_PRODUCTS_DIR; };
 		8EE9B5521AD67A5B0009BD0A /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		8EE9B5591AD67A730009BD0A /* ExtAudioConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExtAudioConverter.h; sourceTree = "<group>"; };
@@ -72,6 +73,7 @@
 				8EE9B5521AD67A5B0009BD0A /* main.m */,
 				8EE9B5591AD67A730009BD0A /* ExtAudioConverter.h */,
 				8EE9B55A1AD67A730009BD0A /* ExtAudioConverter.m */,
+				8EA190671B5E3B42005EB05B /* input.wav */,
 			);
 			path = ExtAudioConverter;
 			sourceTree = "<group>";
