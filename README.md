@@ -2,7 +2,7 @@
 ExtAudioConverter is an implementation of the afconvert command on OS X, </br>
 so this readme file uses some hints of afconvert help documentation. For example, LEI16 means little-endian signed int with 16 bit depth.
 
-###How to use:
+### How to use:
 
 1. Link Binary with Library "AudioToolbox.framework";
 
